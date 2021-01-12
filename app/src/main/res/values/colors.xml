@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="address">#FFFFFF</color>
+    <color name="headings">#333333</color>
+    <color name="solidCircle">#AAFFFFFF</color>
+    <color name="circleBorder">#50FFFFFF</color>
+    <color name="gradEnd">#333333</color>
+    <color name="gradStart">#AAAAAA</color>
+    <color name="darkGrey">#333333</color>
+    <color name="lightGrey">#AAAAAA</color>
+    <color name="grey">#E5E5E5</color>
+    <color name="oldPictureWhite">#F9F1EB</color>
+
+    <color name="white">#FFFFFF</color>
+
+    <color name="black">#FF000000</color>
+</resources>
