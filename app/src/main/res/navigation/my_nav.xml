@@ -17,7 +17,7 @@
         tools:layout="@layout/fragment_second" />
     <fragment
         android:id="@+id/thirdFragment"
-        android:name="com.example.labise.ThirdFragment"
+        android:name="com.example.labise.View.Fragment.ProfilFragment"
         android:label="Profil"
-        tools:layout="@layout/fragment_third" />
+        tools:layout="@layout/fragment_profil" />
 </navigation>
