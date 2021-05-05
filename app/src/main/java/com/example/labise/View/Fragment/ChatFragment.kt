@@ -13,8 +13,8 @@ import com.example.labise.Model.ChatMessage
 import com.example.labise.R
 import com.example.labise.View.Adapter.ChatAdapter
 import com.example.labise.View.Adapter.ChatAdapter.Companion.ANONYMOUS
-import com.example.labise.View.Adapter.ChatAdapter.Companion.MESSAGES_CHILD
-import com.example.labise.ViewModel.ScrollToBottomObserver
+import com.example.labise.ViewModel.FirebaseViewModel
+import com.example.labise.ViewModel.ScrollToBottomObserverChat
 import com.example.labise.databinding.ActivityMainBinding
 import com.example.labise.databinding.FragmentChatBinding
 import com.firebase.ui.database.FirebaseRecyclerOptions
@@ -38,7 +38,7 @@ class ChatFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
 
         db = Firebase.database
-        val messagesRef = db.reference.child(MESSAGES_CHILD)
+        val messagesRef = db.reference.child(FirebaseViewModel.CONVERSATIONSECTION).child(FirebaseViewModel.CONVERSATIONID)
 
         // The FirebaseRecyclerAdapter class and options come from the FirebaseUI library
         // See: https://github.com/firebase/FirebaseUI-Android
@@ -55,7 +55,7 @@ class ChatFragment : Fragment() {
         // Scroll down when a new message arrives
         // See MyScrollToBottomObserver for details
         adapter.registerAdapterDataObserver(
-            ScrollToBottomObserver(binding.messageRecyclerView, adapter, manager)
+            ScrollToBottomObserverChat(binding.messageRecyclerView, adapter, manager)
         )
 
         binding.sendButton.setOnClickListener {
@@ -65,10 +65,9 @@ class ChatFragment : Fragment() {
                 getPhotoUrl(),
                 null /* no image */
             )
-            db.reference.child(MESSAGES_CHILD).push().setValue(chatMessage)
+            db.reference.child(FirebaseViewModel.CONVERSATIONSECTION).child(FirebaseViewModel.CONVERSATIONID).push().setValue(chatMessage)
             binding.messageEditText.setText("")
         }
-
 
     }
 

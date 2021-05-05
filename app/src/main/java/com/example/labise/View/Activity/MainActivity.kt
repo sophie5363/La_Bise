@@ -10,6 +10,7 @@ import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.example.labise.R
 import com.example.labise.View.Fragment.ChatFragment
+import com.example.labise.View.Fragment.ConversationFragment
 import com.example.labise.View.Fragment.ListeContactFragment
 import com.example.labise.View.Fragment.ProfilFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
@@ -21,14 +22,14 @@ class MainActivity : AppCompatActivity() {
 
         val bottomNav = findViewById<BottomNavigationView>(R.id.bottom_bar)
         bottomNav.setOnNavigationItemSelectedListener(navListener)
-        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, ListeContactFragment()).commit()
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_container, ConversationFragment()).commit()
     }
 
     private val navListener = BottomNavigationView.OnNavigationItemSelectedListener { item ->
         var selectedFragment: Fragment? = null
         when (item.itemId) {
             R.id.nav_chat -> selectedFragment = ChatFragment()
-            R.id.nav_liste -> selectedFragment = ListeContactFragment()
+            R.id.nav_liste -> selectedFragment = ConversationFragment()
         }
         supportFragmentManager.beginTransaction()
             .setCustomAnimations(R.anim.fragment_fade_enter,R.anim.fragment_fade_exit,R.anim.fragment_fade_enter,R.anim.fragment_fade_exit)

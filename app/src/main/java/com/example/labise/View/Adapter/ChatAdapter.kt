@@ -108,10 +108,9 @@ class ChatAdapter (private val options: FirebaseRecyclerOptions<ChatMessage>, pr
     }
 
     companion object {
-        const val TAG = "MessageAdapter"
+        const val TAG = "ChatAdapter"
         const val VIEW_TYPE_TEXT = 1
         const val VIEW_TYPE_IMAGE = 2
-        const val MESSAGES_CHILD = "Messages"
         const val ANONYMOUS = "anonymous"
         private const val REQUEST_IMAGE = 2
         private const val LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif"
