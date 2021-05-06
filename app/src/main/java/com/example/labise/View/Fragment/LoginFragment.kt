@@ -10,6 +10,9 @@ import android.widget.Button
 import android.widget.ImageButton
 import androidx.fragment.app.Fragment
 import com.example.labise.Model.ChatContact
+import com.example.labise.Model.ChatConversation
+import com.example.labise.Model.ChatConversationUtilisateur
+import com.example.labise.Model.ChatUtilisateur
 import com.example.labise.R
 import com.example.labise.View.Activity.MainActivity
 import com.example.labise.ViewModel.FirebaseViewModel
@@ -26,6 +29,7 @@ import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.*
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.DEBUG_PROPERTY_NAME
 
 
 class LoginFragment : Fragment() {
@@ -54,7 +58,7 @@ class LoginFragment : Fragment() {
         signinButton.setOnClickListener(object : View.OnClickListener {
             override fun onClick(p0: View?) {
                 parentFragmentManager.beginTransaction().replace(
-                    R.id.fragment_container,
+                    R.id.login_activity_fragment_container,
                     SigninFragment()
                 ).commit()
             }
@@ -115,13 +119,25 @@ class LoginFragment : Fragment() {
                     val eventListener: ValueEventListener = object : ValueEventListener {
                         override fun onDataChange(dataSnapshot: DataSnapshot) {
                             if (!dataSnapshot.exists()) {
-                                var email = FormatterViewModel.formatForFirebaseDatabase(user.email)
-                                var name = FormatterViewModel.formatForFirebaseDatabase(user.displayName)
+                                var email = FormatterViewModel.formatForFirebaseDatabase(user.email!!)
+                                var name = FormatterViewModel.formatForFirebaseDatabase(user.displayName!!)
                                 val newContact = ChatContact(
                                     email,
                                     name,
                                 )
-                                db.reference.child(FirebaseViewModel.USERSECTION).child(userId).setValue(newContact)
+                                db.reference.child(FirebaseViewModel.USER_SECTION).child(userId).setValue(newContact)
+                                var tabName : List<String> = name.split(' ')
+
+                                val newTempConv = ChatConversationUtilisateur("temp")
+                                var newTempListConv : MutableList<ChatConversationUtilisateur> = mutableListOf()
+
+                                newTempListConv.add(newTempConv)
+
+                                if(tabName.size == 2){
+                                    var chatUtilisateur = ChatUtilisateur(tabName[1],tabName[0], newTempListConv.toList())
+                                    db.reference.child(FirebaseViewModel.UTILISATEUR_SECTION).child(email).setValue(chatUtilisateur)
+                                }
+
                                 var intent = Intent(context, MainActivity::class.java)
                                 startActivity(intent)
                             }else{
@@ -132,7 +148,7 @@ class LoginFragment : Fragment() {
                         override fun onCancelled(databaseError: DatabaseError) {}
                     }
 
-                    db.reference.child(FirebaseViewModel.USERSECTION).child(userId).addListenerForSingleValueEvent(eventListener)
+                    db.reference.child(FirebaseViewModel.USER_SECTION).child(userId).addListenerForSingleValueEvent(eventListener)
 
 
                 }

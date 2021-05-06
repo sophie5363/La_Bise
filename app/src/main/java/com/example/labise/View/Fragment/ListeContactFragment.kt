@@ -59,7 +59,7 @@ class ListeContactFragment : Fragment() {
 
         db = Firebase.database
         //Log.d("path", )
-        val messagesRef = db.reference.child(FirebaseViewModel.USERSECTION)
+        val messagesRef = db.reference.child(FirebaseViewModel.USER_SECTION)
         Log.d("liste contact", "Created view")
         // The FirebaseRecyclerAdapter class and options come from the FirebaseUI library
         // See: https://github.com/firebase/FirebaseUI-Android
@@ -68,19 +68,22 @@ class ListeContactFragment : Fragment() {
             .build()
         Log.d("liste contact", "option done")
         Log.d("liste contact options", options.toString())
-        adapter = ContactAdapter(options)
-        Log.d("Liste contact adapter",adapter.toString())
-        binding.listeContactProgressBar.visibility = ProgressBar.INVISIBLE
-        manager = LinearLayoutManager(requireContext())
-        manager.stackFromEnd = true
-        binding.listeContactFragmentContactRecyclerView.layoutManager = manager
-        binding.listeContactFragmentContactRecyclerView.adapter = adapter
+        val user = auth.currentUser
+        if(user != null){
+            adapter = ContactAdapter(options, user.email, user.displayName, this)
+            Log.d("Liste contact adapter",adapter.toString())
+            binding.listeContactProgressBar.visibility = ProgressBar.INVISIBLE
+            manager = LinearLayoutManager(requireContext())
+            manager.stackFromEnd = true
+            binding.listeContactFragmentContactRecyclerView.layoutManager = manager
+            binding.listeContactFragmentContactRecyclerView.adapter = adapter
 
-        // Scroll down when a new message arrives
-        // See MyScrollToBottomObserver for details
-        adapter.registerAdapterDataObserver(
-            ScrollToBottomObserverContact(binding.listeContactFragmentContactRecyclerView, adapter, manager)
-        )
+            // Scroll down when a new message arrives
+            // See MyScrollToBottomObserver for details
+            adapter.registerAdapterDataObserver(
+                ScrollToBottomObserverContact(binding.listeContactFragmentContactRecyclerView, adapter, manager)
+            )
+        }
     }
 
     override fun onPause() {

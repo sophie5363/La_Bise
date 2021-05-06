@@ -3,11 +3,15 @@ package com.example.labise.ViewModel
 object FirebaseViewModel {
 
     // Conversation
-    const val CONVERSATIONSECTION = "Conversation"
-    var CONVERSATIONID = "enkofeyinc-sophieanterre-123456765432123"
+    const val CONVERSATION_SECTION = "Conversation"
+    var CONVERSATION_ID = ""
+    const val CONVERSATION_TEXT_SECTION = "text"
 
     // Utilisateur
-    const val USERSECTION = "users"
-    var USERID = ""
+    const val USER_SECTION = "users"
+    var USER_ID = ""
+
+    const val UTILISATEUR_SECTION = "Utilisateur"
+    const val UTILISATEUR_CONVERSATIONS = "conversations"
 
 }

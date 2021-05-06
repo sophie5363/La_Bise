@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageButton
 import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
@@ -27,6 +28,8 @@ class ProfilFragment : Fragment() {
 
     lateinit var profilNameTextView: TextView
 
+    lateinit var backButton: ImageButton
+
     private lateinit var auth: FirebaseAuth
 
 
@@ -41,6 +44,14 @@ class ProfilFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         var context = requireContext()
+
+        backButton = view.findViewById(R.id.profil_fragment_top_bar_image_button)
+
+        backButton.setOnClickListener(object : View.OnClickListener{
+            override fun onClick(p0: View?) {
+                parentFragmentManager.popBackStack()
+            }
+        })
 
         profilNameTextView = view.findViewById(R.id.profil_fragment_name_user_text_view)
 

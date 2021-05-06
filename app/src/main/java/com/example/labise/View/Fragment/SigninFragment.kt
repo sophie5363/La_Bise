@@ -28,7 +28,7 @@ class SigninFragment : Fragment() {
         
         loginButton.setOnClickListener(object : View.OnClickListener{
             override fun onClick(p0: View?) {
-                parentFragmentManager.beginTransaction().replace(R.id.fragment_container, LoginFragment()).commit()
+                parentFragmentManager.beginTransaction().replace(R.id.login_activity_fragment_container, LoginFragment()).commit()
             }
         })
 
