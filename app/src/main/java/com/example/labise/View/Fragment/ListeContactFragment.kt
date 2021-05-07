@@ -60,14 +60,11 @@ class ListeContactFragment : Fragment() {
         db = Firebase.database
         //Log.d("path", )
         val messagesRef = db.reference.child(FirebaseViewModel.USER_SECTION)
-        Log.d("liste contact", "Created view")
         // The FirebaseRecyclerAdapter class and options come from the FirebaseUI library
         // See: https://github.com/firebase/FirebaseUI-Android
         val options = FirebaseRecyclerOptions.Builder<ChatContact>()
             .setQuery(messagesRef, ChatContact::class.java)
             .build()
-        Log.d("liste contact", "option done")
-        Log.d("liste contact options", options.toString())
         val user = auth.currentUser
         if(user != null){
             adapter = ContactAdapter(options, user.email, user.displayName, this)

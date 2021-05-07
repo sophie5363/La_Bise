@@ -69,7 +69,6 @@ class ConversationAdapter(private val options: FirebaseRecyclerOptions<ChatConve
                 setTextColor(item.nomUser2, binding.conversationItemAccountTextView)
             }
 
-
             //if (item.photoUrl != null) {
             //    loadImageIntoView(binding.contactItemAccountImageView, item.photoUrl!!)
             //} else {

@@ -17,6 +17,7 @@ import com.example.labise.View.Adapter.ChatAdapter
 import com.example.labise.View.Adapter.ContactAdapter
 import com.example.labise.View.Adapter.ConversationAdapter
 import com.example.labise.ViewModel.FirebaseViewModel
+import com.example.labise.ViewModel.FormatterViewModel
 import com.example.labise.ViewModel.ScrollToBottomObserverContact
 import com.example.labise.ViewModel.ScrollToBottomObserverConversation
 import com.example.labise.databinding.FragmentChatBinding
@@ -68,15 +69,19 @@ class ConversationFragment : Fragment() {
         auth = FirebaseAuth.getInstance()
 
         db = Firebase.database
-        val messagesRef = db.reference.child(FirebaseViewModel.CONVERSATION_SECTION)
-        val options = FirebaseRecyclerOptions.Builder<ChatConversation>()
-            .setQuery(messagesRef, ChatConversation::class.java)
-            .build()
+        //val messagesRef = db.reference.child(FirebaseViewModel.CONVERSATION_SECTION)
 
         if (auth.currentUser != null) {
             Glide.with(requireContext()).load(getPhotoUrl())
                 .placeholder(R.drawable.baseline_account_circle_black_24dp).override(150)
                 .into(view.findViewById(R.id.conversation_fragment_top_bar_profil_image_button))
+
+            val emailFormatted = FormatterViewModel.formatForFirebaseDatabase(auth.currentUser.email)
+
+            val messagesRef = db.reference.child(FirebaseViewModel.UTILISATEUR_SECTION).child(FormatterViewModel.formatForFirebaseDatabase(emailFormatted)).child(FirebaseViewModel.UTILISATEUR_CONVERSATIONS)
+            val options = FirebaseRecyclerOptions.Builder<ChatConversation>()
+                .setQuery(messagesRef, ChatConversation::class.java)
+                .build()
 
             profilButton.setOnClickListener(object : View.OnClickListener {
                 override fun onClick(p0: View?) {

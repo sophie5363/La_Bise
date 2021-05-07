@@ -128,13 +128,8 @@ class LoginFragment : Fragment() {
                                 db.reference.child(FirebaseViewModel.USER_SECTION).child(userId).setValue(newContact)
                                 var tabName : List<String> = name.split(' ')
 
-                                val newTempConv = ChatConversationUtilisateur("temp")
-                                var newTempListConv : MutableList<ChatConversationUtilisateur> = mutableListOf()
-
-                                newTempListConv.add(newTempConv)
-
                                 if(tabName.size == 2){
-                                    var chatUtilisateur = ChatUtilisateur(tabName[1],tabName[0], newTempListConv.toList())
+                                    var chatUtilisateur = ChatUtilisateur(tabName[1],tabName[0])
                                     db.reference.child(FirebaseViewModel.UTILISATEUR_SECTION).child(email).setValue(chatUtilisateur)
                                 }
 
