@@ -22,11 +22,11 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
-class ConversationAdapter(private val options: FirebaseRecyclerOptions<ChatConversation>, private val displayName : String, private val parent : Fragment) : FirebaseRecyclerAdapter<ChatConversation, RecyclerView.ViewHolder>(options)  {
+class ConversationAdapter(private val options: ArrayList<ChatConversation>, private val displayName : String, private val parent : Fragment) : RecyclerView.Adapter<ConversationAdapter.MessageViewHolder>()  {
 
     private lateinit var db: FirebaseDatabase
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConversationAdapter.MessageViewHolder {
         Log.d("debug message : ", "Create ViewHolder")
         val inflater = LayoutInflater.from(parent.context)
 
@@ -36,10 +36,10 @@ class ConversationAdapter(private val options: FirebaseRecyclerOptions<ChatConve
 
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, model: ChatConversation) {
+    override fun onBindViewHolder(holder: ConversationAdapter.MessageViewHolder, position: Int) {
         Log.d("debug message : ", "Binding ViewHolder")
-        if (options.snapshots[position].nomUser2 != null) {
-            (holder as MessageViewHolder).bind(model)
+        if (options[position].nomUser2 != null) {
+            (holder as MessageViewHolder).bind(options[position])
         } else {
         }
     }
@@ -93,5 +93,9 @@ class ConversationAdapter(private val options: FirebaseRecyclerOptions<ChatConve
         const val VIEW_TYPE_TEXT = 1
         const val ANONYMOUS = "anonymous"
         private const val LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif"
+    }
+
+    override fun getItemCount(): Int {
+        return options.size
     }
 }

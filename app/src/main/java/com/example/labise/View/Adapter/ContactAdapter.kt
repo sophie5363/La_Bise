@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
 import android.widget.TextView
+import androidx.core.view.isGone
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import com.example.labise.Model.ChatContact
@@ -18,16 +20,18 @@ import com.example.labise.ViewModel.FormatterViewModel
 import com.example.labise.databinding.ContactItemBinding
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.google.firebase.auth.ktx.userProfileChangeRequest
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 import java.util.*
+import kotlin.collections.ArrayList
 
-class ContactAdapter(private val options: FirebaseRecyclerOptions<ChatContact>, private val userEmail: String?, private val userName : String?, private val parent : Fragment) : FirebaseRecyclerAdapter<ChatContact, RecyclerView.ViewHolder>(options) {
+class ContactAdapter(private val options: ArrayList<ChatContact>, private val userEmail: String?, private val userName : String?, private val parent : Fragment) : RecyclerView.Adapter<ContactAdapter.MessageViewHolder>() {
 
     private lateinit var db: FirebaseDatabase
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MessageViewHolder {
         Log.d("debug message : ", "Create ViewHolder")
         val inflater = LayoutInflater.from(parent.context)
         val view = inflater.inflate(R.layout.contact_item, parent, false)
@@ -36,12 +40,19 @@ class ContactAdapter(private val options: FirebaseRecyclerOptions<ChatContact>, 
 
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, model: ChatContact) {
+    override fun onBindViewHolder(holder: MessageViewHolder, position: Int) {
         Log.d("debug message : ", "Binding ViewHolder")
-        if (options.snapshots[position].name != null) {
-            val user1 = userName!!
-            val user2 = options.snapshots[position].name!!
-            (holder as MessageViewHolder).bind(model,user1,user2)
+        if (options[position].name != null) {
+            val emailFormatted = FormatterViewModel.formatForFirebaseDatabase(userEmail!!)
+
+            if(options[position].email == emailFormatted){
+                holder.itemView.visibility = View.GONE
+                holder.itemView.isEnabled = false
+            }else{
+                val user1 = userName!!
+                val user2 = options[position].name!!
+                (holder as MessageViewHolder).bind(options[position],user1,user2)
+            }
         } else {
         }
     }
@@ -52,8 +63,11 @@ class ContactAdapter(private val options: FirebaseRecyclerOptions<ChatContact>, 
 
     inner class MessageViewHolder(private val binding: ContactItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
+
         fun bind(item: ChatContact, user1 : String, user2 : String) {
             Log.d("debug message : ", "func bind ViewHolder")
+
+            this.itemView
 
             binding.contactItemAccountImageButton.setOnClickListener(object : View.OnClickListener{
                 override fun onClick(p0: View?) {
@@ -92,6 +106,10 @@ class ContactAdapter(private val options: FirebaseRecyclerOptions<ChatContact>, 
         const val VIEW_TYPE_TEXT = 1
         const val ANONYMOUS = "anonymous"
         private const val LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif"
+    }
+
+    override fun getItemCount(): Int {
+        return options.size
     }
 
 }

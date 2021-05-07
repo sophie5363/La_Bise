@@ -11,4 +11,8 @@ class ChatContact {
         this.email = email
         this.name = name
     }
+
+    companion object{
+
+    }
 }
