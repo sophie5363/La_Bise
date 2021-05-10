@@ -10,30 +10,26 @@
         android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="50dp"
+        android:layout_margin="16dp"
         android:orientation="horizontal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0">
 
-        <androidx.cardview.widget.CardView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:layout_marginLeft="16dp"
-            app:cardCornerRadius="90dp">
 
-            <ImageButton
-                android:id="@+id/liste_contact_fragment_top_bar_profil_image_button"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:background="@color/transparent"
-                android:src="@drawable/ic_baseline_arrow_back_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.1"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.1" />
-        </androidx.cardview.widget.CardView>
+        <ImageView
+            android:id="@+id/liste_contact_fragment_top_bar_profil_image_button"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@color/transparent"
+            android:src="@drawable/ic_baseline_arrow_back_24"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.1"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintVertical_bias="0.1" />
+
 
         <TextView
             android:layout_width="0dp"
@@ -41,25 +37,25 @@
             android:layout_weight="1"
             android:gravity="center"
             android:text="Contacts"
-            android:textSize="20sp"
+            android:textSize="23sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toEndOf="@+id/imageButton"
             app:layout_constraintTop_toTopOf="parent" />
 
-        <androidx.cardview.widget.CardView
+        <androidx.constraintlayout.widget.Placeholder
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginRight="16dp">
-        </androidx.cardview.widget.CardView>
+            android:background="@color/transparent"></androidx.constraintlayout.widget.Placeholder>
     </LinearLayout>
 
     <SearchView
         android:id="@+id/liste_contact_search_view"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_margin="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/linearLayout2"
-        app:layout_constraintVertical_bias="0.05" />
+        app:layout_constraintVertical_bias="0.0" />
 
     <ProgressBar
         android:id="@+id/liste_contact_progress_bar"
@@ -75,9 +71,9 @@
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/liste_contact_fragment_contact_recycler_view"
-        android:layout_marginTop="16dp"
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:layout_marginTop="16dp"
         android:paddingHorizontal="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/liste_contact_search_view" />

@@ -129,7 +129,7 @@ class LoginFragment : Fragment() {
                                 var tabName : List<String> = name.split(' ')
 
                                 if(tabName.size == 2){
-                                    var chatUtilisateur = ChatUtilisateur(tabName[1],tabName[0])
+                                    var chatUtilisateur = ChatUtilisateur(tabName[1],tabName[0], user.photoUrl.toString())
                                     db.reference.child(FirebaseViewModel.UTILISATEUR_SECTION).child(email).setValue(chatUtilisateur)
                                 }
 

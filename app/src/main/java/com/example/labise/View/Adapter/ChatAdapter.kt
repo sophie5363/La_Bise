@@ -3,6 +3,7 @@ package com.example.labise.View.Adapter
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
@@ -16,18 +17,24 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
+import java.util.zip.Inflater
 
 class ChatAdapter (private val options: FirebaseRecyclerOptions<ChatMessage>, private val currentUserName: String?) : FirebaseRecyclerAdapter<ChatMessage, RecyclerView.ViewHolder>(options) {
 
+    lateinit var view : View
+    lateinit var inflater : LayoutInflater
+    lateinit var parent : ViewGroup
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         Log.d("debug message : ","Create ViewHolder")
-        val inflater = LayoutInflater.from(parent.context)
+        inflater = LayoutInflater.from(parent.context)
         return if (viewType == VIEW_TYPE_TEXT) {
-            val view = inflater.inflate(R.layout.message_chat, parent, false)
+            this.parent = parent
+            view = inflater.inflate(R.layout.message_chat, parent, false)
             val binding = MessageChatBinding.bind(view)
             MessageViewHolder(binding)
         } else {
-            val view = inflater.inflate(R.layout.message_chat_image, parent, false)
+            view = inflater.inflate(R.layout.message_chat_image, parent, false)
             val binding = MessageChatImageBinding.bind(view)
             ImageMessageViewHolder(binding)
         }
@@ -48,11 +55,18 @@ class ChatAdapter (private val options: FirebaseRecyclerOptions<ChatMessage>, pr
 
     inner class MessageViewHolder(private val binding: MessageChatBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(item: ChatMessage) {
+
+            if(item.name == currentUserName){
+                Log.d("creating new inflater","now")
+                view = inflater.inflate(R.layout.message_chat_alt, parent, false)
+                val binding = MessageChatBinding.bind(view)
+                MessageViewHolder(binding)
+            }
+
             Log.d("debug message : ","func bind ViewHolder")
             binding.messageTextView.text = item.text
             setTextColor(item.name, binding.messageTextView)
 
-            binding.messengerTextView.text = if (item.name == null) ANONYMOUS else item.name
             if (item.photoUrl != null) {
                 loadImageIntoView(binding.messengerImageView, item.photoUrl!!)
             } else {

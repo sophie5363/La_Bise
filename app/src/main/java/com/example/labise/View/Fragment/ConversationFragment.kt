@@ -1,14 +1,13 @@
 package com.example.labise.View.Fragment
 
 import android.os.Bundle
+import android.os.Handler
 import android.util.Log
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageButton
-import android.widget.ProgressBar
-import android.widget.SearchView
+import android.widget.*
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.example.labise.Model.ChatContact
@@ -37,7 +36,7 @@ class ConversationFragment : Fragment() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var profilButton: ImageButton
-    private lateinit var contactButton: ImageButton
+    private lateinit var contactButton: ImageView
     private lateinit var binding: FragmentConversationBinding
     private lateinit var db: FirebaseDatabase
     private lateinit var adapter: ConversationAdapter
@@ -45,7 +44,8 @@ class ConversationFragment : Fragment() {
     private lateinit var searchBar : SearchView
     private lateinit var email : String
     private lateinit var displayName : String
-    private lateinit var list : ArrayList<ChatConversation>
+    private lateinit var pasDeConvTextView : TextView
+    var list : ArrayList<ChatConversation> = ArrayList()
     var self = this
 
     override fun onCreateView(
@@ -60,11 +60,15 @@ class ConversationFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+        var context = requireContext()
+
         profilButton = view.findViewById(R.id.conversation_fragment_top_bar_profil_image_button)
+        pasDeConvTextView = view.findViewById(R.id.conversation_fragment_pas_de_conversation_text_view)
         contactButton = view.findViewById(R.id.conversation_fragment_top_bar_add_contact_image_button)
         searchBar = view.findViewById(R.id.conversation_search_view)
 
-        if(searchBar != null){
+        pasDeConvTextView.visibility = View.INVISIBLE
+
             searchBar.setOnQueryTextListener(object : SearchView.OnQueryTextListener{
                 override fun onQueryTextSubmit(p0: String?): Boolean {
                     return false
@@ -76,7 +80,6 @@ class ConversationFragment : Fragment() {
                 }
 
             })
-        }
 
         contactButton.setOnClickListener(object : View.OnClickListener{
             override fun onClick(p0: View?) {
@@ -89,6 +92,8 @@ class ConversationFragment : Fragment() {
                     .replace(R.id.main_activity_fragment_container, ListeContactFragment()).commit()
             }
         })
+        Handler().postDelayed(loadingState(), 10000)
+
 
         auth = FirebaseAuth.getInstance()
 
@@ -100,12 +105,9 @@ class ConversationFragment : Fragment() {
                 .placeholder(R.drawable.baseline_account_circle_black_24dp).override(150)
                 .into(view.findViewById(R.id.conversation_fragment_top_bar_profil_image_button))
 
-            email = FormatterViewModel.formatForFirebaseDatabase(auth.currentUser.email)
-            displayName = FormatterViewModel.formatForFirebaseDatabase(auth.currentUser.displayName)
+            email = FormatterViewModel.formatForFirebaseDatabase(auth.currentUser!!.email!!)
+            displayName = FormatterViewModel.formatForFirebaseDatabase(auth.currentUser!!.displayName!!)
             val messagesRef = db.reference.child(FirebaseViewModel.UTILISATEUR_SECTION).child(FormatterViewModel.formatForFirebaseDatabase(email)).child(FirebaseViewModel.UTILISATEUR_CONVERSATIONS)
-            val options = FirebaseRecyclerOptions.Builder<ChatConversation>()
-                .setQuery(messagesRef, ChatConversation::class.java)
-                .build()
 
             messagesRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -115,11 +117,10 @@ class ConversationFragment : Fragment() {
                             var dataChild = data.getValue(ChatConversation::class.java)!!
                             list.add(dataChild)
                         }
-                        adapter = ConversationAdapter(list, auth.currentUser!!.displayName!!, self)
+                        adapter = ConversationAdapter(list, email, self, auth.currentUser!!.displayName!!)
                         Log.d("Liste contact adapter", adapter.toString())
                         binding.conversationProgressBar.visibility = ProgressBar.INVISIBLE
-                        manager = LinearLayoutManager(requireContext())
-                        manager.stackFromEnd = true
+                        manager = LinearLayoutManager(context)
                         binding.conversationFragmentContactRecyclerView.layoutManager = manager
                         binding.conversationFragmentContactRecyclerView.adapter = adapter
 
@@ -160,11 +161,15 @@ class ConversationFragment : Fragment() {
                 }
             }
 
-            adapter = ConversationAdapter(myList, auth.currentUser!!.displayName!!, this)
-            Log.d("Liste contact adapter", adapter.toString())
+            if(list.size == 0){
+                pasDeConvTextView.visibility = View.VISIBLE
+            }else{
+                pasDeConvTextView.visibility = View.INVISIBLE
+            }
+
+            adapter = ConversationAdapter(myList, email, this, auth.currentUser!!.displayName!!)
             binding.conversationProgressBar.visibility = ProgressBar.INVISIBLE
             manager = LinearLayoutManager(requireContext())
-            manager.stackFromEnd = true
             binding.conversationFragmentContactRecyclerView.layoutManager = manager
             binding.conversationFragmentContactRecyclerView.adapter = adapter
 
@@ -190,4 +195,13 @@ class ConversationFragment : Fragment() {
         return user?.photoUrl?.toString()
     }
 
+    inner class loadingState : Runnable{
+        override fun run() {
+            if(list.size == 0){
+                Log.d("timer finish", "Now doing function")
+                binding.conversationProgressBar.visibility = ProgressBar.INVISIBLE
+                pasDeConvTextView.visibility = View.VISIBLE
+            }
+        }
+    }
 }

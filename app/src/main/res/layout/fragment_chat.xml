@@ -11,14 +11,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
+        android:layout_margin="16dp"
         ads:layout_constraintVertical_bias="0"
         ads:layout_constraintBottom_toBottomOf="parent"
         ads:layout_constraintTop_toTopOf="parent">
 
-        <ImageButton
+        <ImageView
             android:id="@+id/chat_fragment_top_bar_image_button"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
             android:background="@color/transparent"
             android:src="@drawable/ic_baseline_arrow_back_24" />
 
@@ -26,9 +27,14 @@
             android:id="@+id/chat_fragment_top_bar_text_view"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_weight="1"
             android:gravity="center"
             android:text="Chat"
-            android:textSize="20sp" />
+            android:textSize="23sp" />
+
+        <androidx.constraintlayout.widget.Placeholder
+            android:layout_width="50dp"
+            android:layout_height="50dp"/>
     </LinearLayout>
 
     <LinearLayout

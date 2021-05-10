@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageButton
+import android.widget.ImageView
 import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
@@ -33,7 +34,7 @@ class ChatFragment : Fragment() {
     private lateinit var binding: FragmentChatBinding
     private lateinit var manager: LinearLayoutManager
     private lateinit var auth: FirebaseAuth
-    private lateinit var backButton: ImageButton
+    private lateinit var backButton: ImageView
     private lateinit var profilName : TextView
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -46,10 +47,12 @@ class ChatFragment : Fragment() {
                 parentFragmentManager.popBackStack()
             }
         })
+        profilName = view.findViewById(R.id.chat_fragment_top_bar_text_view)
 
         auth = FirebaseAuth.getInstance()
 
         db = Firebase.database
+
         val messagesRef = db.reference.child(FirebaseViewModel.CONVERSATION_SECTION).child(FirebaseViewModel.CONVERSATION_ID).child(FirebaseViewModel.CONVERSATION_TEXT_SECTION)
 
         // The FirebaseRecyclerAdapter class and options come from the FirebaseUI library

@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.labise.Model.ChatContact
 import com.example.labise.Model.ChatConversation
 import com.example.labise.R
@@ -18,17 +19,30 @@ import com.example.labise.databinding.ContactItemBinding
 import com.example.labise.databinding.ConversationItemBinding
 import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 import com.google.firebase.database.ktx.database
 import com.google.firebase.ktx.Firebase
 
-class ConversationAdapter(private val options: ArrayList<ChatConversation>, private val displayName : String, private val parent : Fragment) : RecyclerView.Adapter<ConversationAdapter.MessageViewHolder>()  {
+class ConversationAdapter(
+    private val options: ArrayList<ChatConversation>,
+    private val email: String,
+    private val parent: Fragment,
+    private val displayName : String,
+) : RecyclerView.Adapter<ConversationAdapter.MessageViewHolder>() {
 
     private lateinit var db: FirebaseDatabase
 
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ConversationAdapter.MessageViewHolder {
+    override fun onCreateViewHolder(
+        parent: ViewGroup,
+        viewType: Int
+    ): ConversationAdapter.MessageViewHolder {
         Log.d("debug message : ", "Create ViewHolder")
         val inflater = LayoutInflater.from(parent.context)
+
+        db = Firebase.database
 
         val view = inflater.inflate(R.layout.conversation_item, parent, false)
         val binding = ConversationItemBinding.bind(view)
@@ -53,37 +67,64 @@ class ConversationAdapter(private val options: ArrayList<ChatConversation>, priv
         fun bind(item: ChatConversation) {
             Log.d("debug message : ", "func bind ViewHolder")
 
-            binding.conversationItemAccountTextView.setOnClickListener(object : View.OnClickListener{
+            binding.conversationItemAccountTextView.setOnClickListener(object :
+                View.OnClickListener {
                 override fun onClick(p0: View?) {
                     FirebaseViewModel.CONVERSATION_ID = item.conversationName!!
                     parent.parentFragmentManager.beginTransaction().addToBackStack("ChatFragment")
-                        .setCustomAnimations(R.anim.fragment_fade_enter,R.anim.fragment_fade_exit,R.anim.fragment_fade_enter,R.anim.fragment_fade_exit)
+                        .setCustomAnimations(
+                            R.anim.fragment_fade_enter,
+                            R.anim.fragment_fade_exit,
+                            R.anim.fragment_fade_enter,
+                            R.anim.fragment_fade_exit
+                        )
                         .replace(R.id.main_activity_fragment_container, ChatFragment()).commit()
                 }
             })
-            if(displayName != item.nomUser1){
-                binding.conversationItemAccountTextView.text = item.nomUser1
-                setTextColor(item.nomUser1, binding.conversationItemAccountTextView)
-            }else{
+
+            if(displayName == item.nomUser1){
                 binding.conversationItemAccountTextView.text = item.nomUser2
-                setTextColor(item.nomUser2, binding.conversationItemAccountTextView)
+            }else{
+                binding.conversationItemAccountTextView.text = item.nomUser1
             }
 
-            //if (item.photoUrl != null) {
-            //    loadImageIntoView(binding.contactItemAccountImageView, item.photoUrl!!)
-            //} else {
-            binding.conversationItemAccountImageView.setImageResource(R.drawable.ic_baseline_account_circle_24)
-            //}
-        }
 
-        private fun setTextColor(userName: String?, textView: TextView) {
-            if (userName != ANONYMOUS && userName != null) {
-                textView.setBackgroundResource(R.color.black)
-                textView.setTextColor(Color.WHITE)
-            } else {
-                textView.setBackgroundResource(R.color.grey)
-                textView.setTextColor(Color.BLACK)
-            }
+            binding.conversationItemAccountImageView.setOnClickListener(object :
+                View.OnClickListener {
+                override fun onClick(p0: View?) {
+                    parent.parentFragmentManager.beginTransaction().addToBackStack("ChatFragment")
+                        .setCustomAnimations(
+                            R.anim.fragment_fade_enter,
+                            R.anim.fragment_fade_exit,
+                            R.anim.fragment_fade_enter,
+                            R.anim.fragment_fade_exit
+                        )
+                        .replace(R.id.main_activity_fragment_container, ChatFragment()).commit()
+                }
+            })
+
+            var conversationName = item.conversationName
+            conversationName = conversationName!!.replace("conversation","")
+            conversationName = conversationName!!.replace(email,"")
+            val othersEmail = conversationName!!.replace("_","")
+
+            val requestImage = db.reference.child(FirebaseViewModel.UTILISATEUR_SECTION).child(othersEmail).child(FirebaseViewModel.UTILISATEUR_PHOTOURL)
+
+            requestImage.addValueEventListener(object : ValueEventListener{
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if(snapshot.exists()){
+                        var url = snapshot.getValue(String::class.java)!!
+                        Glide.with(parent.requireContext()).load(url).placeholder(R.drawable.baseline_account_circle_black_24dp).override(400)
+                            .into(binding.conversationItemAccountImageView)
+                    }else{
+                        binding.conversationItemAccountImageView.setImageResource(R.drawable.ic_baseline_account_circle_24)
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                }
+
+            })
         }
 
     }

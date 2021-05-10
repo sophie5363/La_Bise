@@ -38,8 +38,8 @@ class ListeContactFragment : Fragment() {
     private lateinit var adapter: ContactAdapter
     private lateinit var binding: FragmentListeContactBinding
     private lateinit var manager: LinearLayoutManager
-    private lateinit var backButton: ImageButton
-    private lateinit var list : ArrayList<ChatContact>
+    private lateinit var backButton: ImageView
+    var list : ArrayList<ChatContact> = ArrayList()
     private lateinit var email : String
     private lateinit var displayName : String
     private lateinit var searchBar : SearchView
@@ -56,6 +56,8 @@ class ListeContactFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        val context = requireContext()
 
         searchBar = view.findViewById(R.id.liste_contact_search_view)
         backButton = view.findViewById(R.id.liste_contact_fragment_top_bar_profil_image_button)
@@ -107,8 +109,7 @@ class ListeContactFragment : Fragment() {
                         //adapter = ContactAdapter(options, user.email, user.displayName, this)
                         //Log.d("Liste contact adapter",adapter.toString())
                         binding.listeContactProgressBar.visibility = ProgressBar.INVISIBLE
-                        manager = LinearLayoutManager(requireContext())
-                        manager.stackFromEnd = true
+                        manager = LinearLayoutManager(context)
                         binding.listeContactFragmentContactRecyclerView.layoutManager = manager
                         binding.listeContactFragmentContactRecyclerView.adapter = adapter
 
@@ -139,7 +140,6 @@ class ListeContactFragment : Fragment() {
             //Log.d("Liste contact adapter",adapter.toString())
             binding.listeContactProgressBar.visibility = ProgressBar.INVISIBLE
             manager = LinearLayoutManager(requireContext())
-            manager.stackFromEnd = true
             binding.listeContactFragmentContactRecyclerView.layoutManager = manager
             binding.listeContactFragmentContactRecyclerView.adapter = adapter
 

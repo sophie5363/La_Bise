@@ -28,7 +28,7 @@ class ProfilFragment : Fragment() {
 
     lateinit var profilNameTextView: TextView
 
-    lateinit var backButton: ImageButton
+    lateinit var backButton: ImageView
 
     private lateinit var auth: FirebaseAuth
 

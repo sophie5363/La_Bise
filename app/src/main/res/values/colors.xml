@@ -15,7 +15,7 @@
 
     <color name="black">#FF000000</color>
 
-    <color name="transparent">#00000000</color>
+    <color name="transparent">#0000</color>
 
     <color name="orangeLaBise">#fd5e08</color>
     <color name="jauneLaBise">#fec002</color>

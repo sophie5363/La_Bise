@@ -13,5 +13,6 @@ object FirebaseViewModel {
 
     const val UTILISATEUR_SECTION = "Utilisateur"
     const val UTILISATEUR_CONVERSATIONS = "conversations"
+    const val UTILISATEUR_PHOTOURL = "imageURL"
 
 }
