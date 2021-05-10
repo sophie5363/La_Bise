@@ -7,6 +7,11 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.cardview.widget.CardView
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.constraintlayout.widget.ConstraintSet
+import androidx.core.content.ContextCompat
+import androidx.core.graphics.toColor
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.labise.Model.ChatMessage
@@ -17,16 +22,19 @@ import com.firebase.ui.database.FirebaseRecyclerAdapter
 import com.firebase.ui.database.FirebaseRecyclerOptions
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.storage.ktx.storage
-import java.util.zip.Inflater
 
-class ChatAdapter (private val options: FirebaseRecyclerOptions<ChatMessage>, private val currentUserName: String?) : FirebaseRecyclerAdapter<ChatMessage, RecyclerView.ViewHolder>(options) {
+
+class ChatAdapter(
+    private val options: FirebaseRecyclerOptions<ChatMessage>,
+    private val currentUserName: String?
+) : FirebaseRecyclerAdapter<ChatMessage, RecyclerView.ViewHolder>(options) {
 
     lateinit var view : View
     lateinit var inflater : LayoutInflater
     lateinit var parent : ViewGroup
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
-        Log.d("debug message : ","Create ViewHolder")
+        Log.d("debug message : ", "Create ViewHolder")
         inflater = LayoutInflater.from(parent.context)
         return if (viewType == VIEW_TYPE_TEXT) {
             this.parent = parent
@@ -40,9 +48,16 @@ class ChatAdapter (private val options: FirebaseRecyclerOptions<ChatMessage>, pr
         }
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, model: ChatMessage) {
-        Log.d("debug message : ","Binding ViewHolder")
+    override fun onBindViewHolder(
+        holder: RecyclerView.ViewHolder,
+        position: Int,
+        model: ChatMessage
+    ) {
+        Log.d("debug message : ", "Binding ViewHolder")
         if (options.snapshots[position].text != null) {
+                if(options.snapshots[position].name == currentUserName){
+
+                }
             (holder as MessageViewHolder).bind(model)
         } else {
             (holder as ImageMessageViewHolder).bind(model)
@@ -53,19 +68,27 @@ class ChatAdapter (private val options: FirebaseRecyclerOptions<ChatMessage>, pr
         return if (options.snapshots[position].text != null) VIEW_TYPE_TEXT else VIEW_TYPE_IMAGE
     }
 
-    inner class MessageViewHolder(private val binding: MessageChatBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class MessageViewHolder(private var binding: MessageChatBinding) : RecyclerView.ViewHolder(
+        binding.root
+    ) {
         fun bind(item: ChatMessage) {
 
             if(item.name == currentUserName){
-                Log.d("creating new inflater","now")
-                view = inflater.inflate(R.layout.message_chat_alt, parent, false)
-                val binding = MessageChatBinding.bind(view)
-                MessageViewHolder(binding)
+
+                val set = ConstraintSet()
+                val constraintLayout = view.findViewById(R.id.message_chat_container_constraint) as ConstraintLayout
+                set.clone(constraintLayout)
+                set.connect(binding.messageChatMessageCardView.id, ConstraintSet.START,
+                    ConstraintSet.PARENT_ID, ConstraintSet.START)
+                set.connect(binding.messageChatMessageCardView.id, ConstraintSet.END,
+                    binding.messageChatCardView.id, ConstraintSet.START, 20)
+                set.setHorizontalBias(binding.messageChatCardView.id,1F)
+                set.setHorizontalBias(binding.messageChatMessageCardView.id, 1F)
+                set.applyTo(constraintLayout)
             }
 
-            Log.d("debug message : ","func bind ViewHolder")
             binding.messageTextView.text = item.text
-            setTextColor(item.name, binding.messageTextView)
+            setTextColor(item.name, binding.messageChatMessageCardView, binding.messageTextView)
 
             if (item.photoUrl != null) {
                 loadImageIntoView(binding.messengerImageView, item.photoUrl!!)
@@ -74,12 +97,14 @@ class ChatAdapter (private val options: FirebaseRecyclerOptions<ChatMessage>, pr
             }
         }
 
-        private fun setTextColor(userName: String?, textView: TextView) {
+        private fun setTextColor(userName: String?, cardView: CardView, textView : TextView) {
             if (userName != ANONYMOUS && currentUserName == userName && userName != null) {
-                textView.setBackgroundResource(R.color.black)
+                cardView.setCardBackgroundColor(ContextCompat.getColor(view.context, R.color.orangeLaBise))
+                cardView.radius = 30F
                 textView.setTextColor(Color.WHITE)
             } else {
-                textView.setBackgroundResource(R.color.grey)
+                cardView.setCardBackgroundColor(ContextCompat.getColor(view.context, R.color.grey))
+                cardView.radius = 30F
                 textView.setTextColor(Color.BLACK)
             }
         }
