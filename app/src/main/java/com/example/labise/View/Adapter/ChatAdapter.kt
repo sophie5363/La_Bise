@@ -54,7 +54,7 @@ class ChatAdapter(
         model: ChatMessage
     ) {
         Log.d("debug message : ", "Binding ViewHolder")
-        if (options.snapshots[position].text != null) {
+        if (options.snapshots[position].content != null) {
                 if(options.snapshots[position].name == currentUserName){
 
                 }
@@ -65,7 +65,7 @@ class ChatAdapter(
     }
 
     override fun getItemViewType(position: Int): Int {
-        return if (options.snapshots[position].text != null) VIEW_TYPE_TEXT else VIEW_TYPE_IMAGE
+        return if (options.snapshots[position].content != null) VIEW_TYPE_TEXT else VIEW_TYPE_IMAGE
     }
 
     inner class MessageViewHolder(private var binding: MessageChatBinding) : RecyclerView.ViewHolder(
@@ -87,7 +87,7 @@ class ChatAdapter(
                 set.applyTo(constraintLayout)
             }
 
-            binding.messageTextView.text = item.text
+            binding.messageTextView.text = item.content
             setTextColor(item.name, binding.messageChatMessageCardView, binding.messageTextView)
 
             if (item.photoUrl != null) {

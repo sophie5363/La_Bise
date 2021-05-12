@@ -1,5 +1,6 @@
 package com.example.labise.View.Adapter
 
+import android.app.AlertDialog
 import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
@@ -11,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.labise.Model.ChatContact
 import com.example.labise.Model.ChatConversation
+import com.example.labise.Model.DialogCustom
 import com.example.labise.R
 import com.example.labise.View.Fragment.ChatFragment
 import com.example.labise.ViewModel.FirebaseViewModel
@@ -82,11 +84,34 @@ class ConversationAdapter(
                 }
             })
 
+
+            binding.conversationItemAccountTextView.setOnLongClickListener(object : View.OnLongClickListener{
+                override fun onLongClick(p0: View?): Boolean {
+                        var dialog = DialogCustom()
+                        dialog.email = email
+                        dialog.nomConv = item.conversationName
+                        dialog.show(parent.parentFragmentManager,"")
+                        return true
+                }
+            })
+
+            binding.conversationItemAccountImageView.setOnLongClickListener(object : View.OnLongClickListener{
+                override fun onLongClick(p0: View?): Boolean {
+                    var dialog = DialogCustom()
+                    dialog.email = email
+                    dialog.nomConv = item.conversationName
+                    dialog.show(parent.parentFragmentManager,"")
+                    return true
+                }
+            })
+
             if(displayName == item.nomUser1){
                 binding.conversationItemAccountTextView.text = item.nomUser2
             }else{
                 binding.conversationItemAccountTextView.text = item.nomUser1
             }
+
+
 
 
             binding.conversationItemAccountImageView.setOnClickListener(object :

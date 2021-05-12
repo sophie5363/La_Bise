@@ -31,7 +31,12 @@ import com.google.firebase.ktx.Firebase
 import java.util.*
 import kotlin.collections.ArrayList
 
-class ContactAdapter(private val options: ArrayList<ChatContact>, private val userEmail: String?, private val userName : String?, private val parent : Fragment) : RecyclerView.Adapter<ContactAdapter.MessageViewHolder>() {
+class ContactAdapter(
+    private val options: ArrayList<ChatContact>,
+    private val userEmail: String?,
+    private val userName: String?,
+    private val parent: Fragment
+) : RecyclerView.Adapter<ContactAdapter.MessageViewHolder>() {
 
     private lateinit var db: FirebaseDatabase
 
@@ -50,13 +55,13 @@ class ContactAdapter(private val options: ArrayList<ChatContact>, private val us
         if (options[position].name != null) {
             val emailFormatted = FormatterViewModel.formatForFirebaseDatabase(userEmail!!)
 
-            if(options[position].email == emailFormatted){
+            if (options[position].email == emailFormatted) {
                 holder.itemView.visibility = View.GONE
                 holder.itemView.isEnabled = false
-            }else{
+            } else {
                 val user1 = userName!!
                 val user2 = options[position].name!!
-                (holder as MessageViewHolder).bind(options[position],user1,user2)
+                (holder as MessageViewHolder).bind(options[position], user1, user2)
             }
         } else {
         }
@@ -69,59 +74,45 @@ class ContactAdapter(private val options: ArrayList<ChatContact>, private val us
     inner class MessageViewHolder(private val binding: ContactItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: ChatContact, user1 : String, user2 : String) {
+        fun bind(item: ChatContact, user1: String, user2: String) {
             Log.d("debug message : ", "func bind ViewHolder")
 
             this.itemView
 
-            binding.contactItemAccountImageButton.setOnClickListener(object : View.OnClickListener{
+            binding.contactItemAccountImageButton.setOnClickListener(object : View.OnClickListener {
                 override fun onClick(p0: View?) {
-                    db = Firebase.database
-                    var createdConversation = "conversation_" + FormatterViewModel.formatForFirebaseDatabase(userEmail!!)+"_"+ item.email!!
-                    var chatConversation = ChatConversation(createdConversation,user1, user2)
-                    db.reference.child(FirebaseViewModel.CONVERSATION_SECTION).child(createdConversation).setValue(chatConversation)
-                    db.reference.child(FirebaseViewModel.UTILISATEUR_SECTION).child(FormatterViewModel.formatForFirebaseDatabase(userEmail)).child(FirebaseViewModel.UTILISATEUR_CONVERSATIONS).push().setValue(chatConversation)
-                    db.reference.child(FirebaseViewModel.UTILISATEUR_SECTION).child(FormatterViewModel.formatForFirebaseDatabase(item.email!!)).child(FirebaseViewModel.UTILISATEUR_CONVERSATIONS).push().setValue(chatConversation)
-                    parent.parentFragmentManager.popBackStack()
+                    getOrCreateConv(item, user1, user2)
                 }
             })
 
             binding.contactItemAccountTextView.text = item.name
 
-            binding.contactItemAccountTextView.setOnClickListener(object : View.OnClickListener{
+            binding.contactItemAccountTextView.setOnClickListener(object : View.OnClickListener {
                 override fun onClick(p0: View?) {
-                    db = Firebase.database
-                    var createdConversation = "conversation_" + FormatterViewModel.formatForFirebaseDatabase(userEmail!!)+"_"+ item.email!!
-                    var chatConversation = ChatConversation(createdConversation,user1, user2)
-                    db.reference.child(FirebaseViewModel.CONVERSATION_SECTION).child(createdConversation).setValue(chatConversation)
-                    db.reference.child(FirebaseViewModel.UTILISATEUR_SECTION).child(FormatterViewModel.formatForFirebaseDatabase(userEmail)).child(FirebaseViewModel.UTILISATEUR_CONVERSATIONS).push().setValue(chatConversation)
-                    db.reference.child(FirebaseViewModel.UTILISATEUR_SECTION).child(FormatterViewModel.formatForFirebaseDatabase(item.email!!)).child(FirebaseViewModel.UTILISATEUR_CONVERSATIONS).push().setValue(chatConversation)
-                    parent.parentFragmentManager.popBackStack()
+                    getOrCreateConv(item, user1, user2)
                 }
             })
 
-            binding.contactItemAccountImageView.setOnClickListener(object : View.OnClickListener{
+            binding.contactItemAccountImageView.setOnClickListener(object : View.OnClickListener {
                 override fun onClick(p0: View?) {
-                    db = Firebase.database
-                    var createdConversation = "conversation_" + FormatterViewModel.formatForFirebaseDatabase(userEmail!!)+"_"+ item.email!!
-                    var chatConversation = ChatConversation(createdConversation,user1, user2)
-                    db.reference.child(FirebaseViewModel.CONVERSATION_SECTION).child(createdConversation).setValue(chatConversation)
-                    db.reference.child(FirebaseViewModel.UTILISATEUR_SECTION).child(FormatterViewModel.formatForFirebaseDatabase(userEmail)).child(FirebaseViewModel.UTILISATEUR_CONVERSATIONS).push().setValue(chatConversation)
-                    db.reference.child(FirebaseViewModel.UTILISATEUR_SECTION).child(FormatterViewModel.formatForFirebaseDatabase(item.email!!)).child(FirebaseViewModel.UTILISATEUR_CONVERSATIONS).push().setValue(chatConversation)
-                    parent.parentFragmentManager.popBackStack()
+                    getOrCreateConv(item, user1, user2)
                 }
             })
 
             var othersEmail = item.email!!
-            val requestImage = db.reference.child(FirebaseViewModel.UTILISATEUR_SECTION).child(othersEmail).child(FirebaseViewModel.UTILISATEUR_PHOTOURL)
+            val requestImage =
+                db.reference.child(FirebaseViewModel.UTILISATEUR_SECTION).child(othersEmail)
+                    .child(FirebaseViewModel.UTILISATEUR_PHOTOURL)
 
             requestImage.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
-                    if(snapshot.exists()){
+                    if (snapshot.exists()) {
                         var url = snapshot.getValue(String::class.java)!!
-                        Glide.with(parent.requireContext()).load(url).placeholder(R.drawable.baseline_account_circle_black_24dp).override(400)
+                        Glide.with(parent.requireContext()).load(url)
+                            .placeholder(R.drawable.baseline_account_circle_black_24dp)
+                            .override(400)
                             .into(binding.contactItemAccountImageView)
-                    }else{
+                    } else {
                         binding.contactItemAccountImageView.setImageResource(R.drawable.ic_baseline_account_circle_24)
                     }
                 }
@@ -133,15 +124,84 @@ class ContactAdapter(private val options: ArrayList<ChatContact>, private val us
         }
     }
 
-    companion object {
-        const val TAG = "ContactAdapter"
-        const val VIEW_TYPE_TEXT = 1
-        const val ANONYMOUS = "anonymous"
-        private const val LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif"
+    fun getOrCreateConv(item: ChatContact, user1: String, user2: String) {
+
+        var foundConversation = false
+        var alreadyInside = false
+
+        db = Firebase.database
+
+        var createdConversation =
+            "conversation_" + FormatterViewModel.formatForFirebaseDatabase(userEmail!!) + "_" + item.email!!
+        var createdConversationAlt =
+            "conversation_" + item.email!! + "_" + FormatterViewModel.formatForFirebaseDatabase(
+                userEmail!!
+            )
+
+        var verifyAlreadyInsideRef =
+            db.reference.child(FirebaseViewModel.UTILISATEUR_SECTION)
+                .child(FormatterViewModel.formatForFirebaseDatabase(userEmail))
+                .child(FirebaseViewModel.UTILISATEUR_CONVERSATIONS)
+
+
+        if (foundConversation == false) {
+            var chatConversation = ChatConversation(createdConversation, user1, user2)
+            db.reference.child(FirebaseViewModel.CONVERSATION_SECTION)
+                .child(createdConversation)
+                .setValue(chatConversation)
+            db.reference.child(FirebaseViewModel.UTILISATEUR_SECTION)
+                .child(FormatterViewModel.formatForFirebaseDatabase(userEmail))
+                .child(FirebaseViewModel.UTILISATEUR_CONVERSATIONS).push()
+                .setValue(chatConversation)
+            db.reference.child(FirebaseViewModel.UTILISATEUR_SECTION)
+                .child(FormatterViewModel.formatForFirebaseDatabase(item.email!!))
+                .child(FirebaseViewModel.UTILISATEUR_CONVERSATIONS).push()
+                .setValue(chatConversation)
+        }
+        parent.parentFragmentManager.popBackStack()
+        /*
+        var verifyExistRef = db.reference.child(FirebaseViewModel.CONVERSATION_SECTION)
+
+        verifyExistRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    for (data in snapshot.children) {
+                        var dataChild = data.getValue(ChatConversation::class.java)!!
+                        if (dataChild.conversationName.equals(createdConversation)) {
+                            db.reference.child(FirebaseViewModel.UTILISATEUR_SECTION)
+                                .child(FormatterViewModel.formatForFirebaseDatabase(userEmail))
+                                .child(FirebaseViewModel.UTILISATEUR_CONVERSATIONS).push()
+                                .setValue(dataChild)
+                            foundConversation = true
+                        }
+                        if (dataChild.conversationName.equals(createdConversationAlt)) {
+                            db.reference.child(FirebaseViewModel.UTILISATEUR_SECTION)
+                                .child(FormatterViewModel.formatForFirebaseDatabase(userEmail))
+                                .child(FirebaseViewModel.UTILISATEUR_CONVERSATIONS).push()
+                                .setValue(dataChild)
+                            foundConversation = true
+                        }
+                    }
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.d("problem", "data")
+            }
+        })
+
+         */
     }
 
-    override fun getItemCount(): Int {
-        return options.size
-    }
+companion object {
+    const val TAG = "ContactAdapter"
+    const val VIEW_TYPE_TEXT = 1
+    const val ANONYMOUS = "anonymous"
+    private const val LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif"
+}
+
+override fun getItemCount(): Int {
+    return options.size
+}
 
 }

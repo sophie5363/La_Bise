@@ -120,6 +120,7 @@ class ConversationFragment : Fragment() {
                         adapter = ConversationAdapter(list, email, self, auth.currentUser!!.displayName!!)
                         Log.d("Liste contact adapter", adapter.toString())
                         binding.conversationProgressBar.visibility = ProgressBar.INVISIBLE
+                        pasDeConvTextView.visibility = View.INVISIBLE
                         manager = LinearLayoutManager(context)
                         binding.conversationFragmentContactRecyclerView.layoutManager = manager
                         binding.conversationFragmentContactRecyclerView.adapter = adapter

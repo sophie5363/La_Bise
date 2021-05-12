@@ -5,7 +5,7 @@ object FirebaseViewModel {
     // Conversation
     const val CONVERSATION_SECTION = "Conversation"
     var CONVERSATION_ID = ""
-    const val CONVERSATION_TEXT_SECTION = "text"
+    const val CONVERSATION_TEXT_SECTION = "message"
 
     // Utilisateur
     const val USER_SECTION = "users"

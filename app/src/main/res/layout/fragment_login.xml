@@ -165,10 +165,10 @@
             <Button
                 android:id="@+id/loginButton"
                 android:layout_width="0dp"
-                android:background="@null"
+                android:background="@color/orangeLaBise"
                 android:padding="0dp"
                 android:layout_margin="0dp"
-
+                android:textColor="@color/white"
                 android:backgroundTint="@color/orangeLaBise"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -177,7 +177,6 @@
             <Button
                 android:id="@+id/signinbutton"
                 android:layout_width="0dp"
-                android:textColor="@color/black"
                 android:background="@null"
                 android:backgroundTint="@color/white"
                 android:layout_height="wrap_content"
